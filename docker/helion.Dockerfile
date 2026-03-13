@@ -50,13 +50,19 @@ RUN sudo uv pip install --system \
     torch \
     --index-url https://download.pytorch.org/whl/cu130
 
-# nvtriton (Triton with TileIR backend — replaces upstream triton)
+# Upstream OpenAI Triton (oait) — PyTorch cu130 bundles triton, but pin the
+# version explicitly so it survives future PyTorch changes.
+RUN sudo uv pip install --system triton==3.6.0
+
+# nvtriton (Triton with TileIR backend) — installed to /opt/nvtriton so it
+# coexists with the upstream triton in site-packages.
+# Activate with: PYTHONPATH=/opt/nvtriton ENABLE_TILE=1
 RUN curl -L -o /tmp/nvtriton-3.6.0-cp313-cp313-linux_x86_64.whl \
     https://github.com/triton-lang/Triton-to-tile-IR/releases/download/v3.6.0-rc1/nvtriton-3.6.0-cp313-cp313-linux_x86_64.whl \
-    && sudo uv pip install --system /tmp/nvtriton-3.6.0-cp313-cp313-linux_x86_64.whl \
+    && sudo python3 -m pip install --no-cache-dir --no-deps \
+       --target /opt/nvtriton \
+       /tmp/nvtriton-3.6.0-cp313-cp313-linux_x86_64.whl \
     && rm /tmp/nvtriton-3.6.0-cp313-cp313-linux_x86_64.whl
-
-ENV ENABLE_TILE=0
 
 # Helion
 RUN sudo uv pip install --system helion
