@@ -50,12 +50,8 @@ RUN sudo uv pip install --system \
     torch \
     --index-url https://download.pytorch.org/whl/cu130
 
-# Upstream OpenAI Triton (oait) — PyTorch cu130 bundles triton, but pin the
-# version explicitly so it survives future PyTorch changes.
-RUN sudo uv pip install --system triton==3.6.0
-
 # nvtriton (Triton with TileIR backend) — installed to /opt/nvtriton so it
-# coexists with the upstream triton in site-packages.
+# coexists with the upstream triton that PyTorch bundles in site-packages.
 # Activate with: PYTHONPATH=/opt/nvtriton ENABLE_TILE=1
 RUN curl -L -o /tmp/nvtriton-3.6.0-cp313-cp313-linux_x86_64.whl \
     https://github.com/triton-lang/Triton-to-tile-IR/releases/download/v3.6.0-rc1/nvtriton-3.6.0-cp313-cp313-linux_x86_64.whl \
